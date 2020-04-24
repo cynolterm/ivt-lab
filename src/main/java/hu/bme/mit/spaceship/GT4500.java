@@ -78,7 +78,53 @@ public class GT4500 implements SpaceShip {
 
       case ALL:
         // try to fire both of the torpedo stores
-        //TODO implement feature
+            if (wasPrimaryFiredLast) {
+            // try to fire the secondary first
+            if (! secondaryTorpedoStore.isEmpty()) {
+              firingSuccess = secondaryTorpedoStore.fire(1);
+              wasPrimaryFiredLast = false;
+              if(firingSuccess && ! primaryTorpedoStore.isEmpty()){
+                firingSuccess = primaryTorpedoStore.fire(1);
+                wasPrimaryFiredLast = true;
+              } else if(! primaryTorpedoStore.isEmpty()){
+                primaryTorpedoStore.fire(1);
+                wasPrimaryFiredLast = true;
+                firingSuccess = false;
+              }
+            }
+            else {
+              //Secondary cant fire a rocket, so we must return false, that it was not successful to fire all so we set firingSuccess to false
+              //but we try to fire at least one 
+              if(! primaryTorpedoStore.isEmpty()){
+                primaryTorpedoStore.fire(1);
+                wasPrimaryFiredLast = true;
+              } 
+              firingSuccess = false;
+            }
+          }
+        else {
+          // try to fire the primary first
+          if (! primaryTorpedoStore.isEmpty()) {
+            firingSuccess = primaryTorpedoStore.fire(1);
+            wasPrimaryFiredLast = true;
+            if(firingSuccess && ! secondaryTorpedoStore.isEmpty()){
+              firingSuccess = secondaryTorpedoStore.fire(1);
+              wasPrimaryFiredLast = false;
+            } else if(!secondaryTorpedoStore.isEmpty()){
+              secondaryTorpedoStore.fire(1);
+              firingSuccess = false;
+            }
+          }
+          else {
+            // although secondary was fired last time, but primary is empty
+            // thus try to fire secondary again
+            if (! secondaryTorpedoStore.isEmpty()) {
+              secondaryTorpedoStore.fire(1);
+              wasPrimaryFiredLast = false;
+            }
+            firingSuccess = false;
+          }
+        }
 
         break;
     }
